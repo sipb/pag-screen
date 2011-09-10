@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# Originally copied from /mit/broder/bin/renew-and-notify
+
+# Modified to zephyr about expiring tickets, rather than sending mail,
+# and to assume that ticket setup has already been done.
+
+# Kill any other copies of this program currently running, since it
+# doesn't get cleaned up after screen exits.
+#
+# Doesn't seem to currently work and the cont-renew-notify process can
+# sometimes kill off itself.
+#
+#command=`basename $0`
+#kill `pgrep -u $USER -f "$command" | grep -v $$` > /dev/null 2> /dev/null
+
+# Default to zephyring.
+if [ "x$ZEPHYR_SCREEN_NOTIFY" = "x" ]; then
+    ZEPHYR_SCREEN_NOTIFY='zwrite -n ${ATHENA_USER:-$USER}'
+fi
+
+# Figure out where date is.
+date=date
+date -d "01/01/2008 12:00:00" > /dev/null 2> /dev/null
+if [ $? -ne 0 ]; then
+    date="athrun gnu gdate"
+fi
+
+# Figure out whether to use echo -e.
+echo=echo
+echolines=`$echo "1\n2" | wc -l`
+if [ $echolines -ne 2 ]; then
+    echo="echo -e"
+fi
+
+# Sleep 7 seconds to minimize confusion.  In most cases, users will
+# only have one zephyr presence.  If they have more than one, though,
+# the zephyr notification may succeed before the current session comes
+# up.  Some Sun machines will take a while to load barnowl; they'll
+# fail at least once before succeeding on a subsequent notification.
+sleep 7
+
+while [ 1 ]; do
+    kinit -R
+    krb524init
+    sleep 1
+    aklog
+    zctl load > /dev/null 2> /dev/null
+  
+    expirestr=`klist | grep 'renew until' | sed -e 's/[\t ]*renew until //' | head -n1`
+
+    if [ -z "$expirestr" ]; then
+	expire=0
+	message="You do not have renewable tickets on `hostname`.\nRun \"kinit -l7d\" to get renewable tickets."
+    else
+	expire=`$date -d "$expirestr" +%s`
+	
+	message="Your tickets on `hostname` will expire within the next 24 hours.\nRun \"kinit -l7d\" to get new renewable tickets."
+    fi
+
+    # Non-renewable tickets will result in a negative difference.
+    now=`$date +%s`
+    difference=`expr $expire - $now`
+    if [ "$difference" -lt "86400" -a "$notified" != "$expire" ]; then
+	notifystatus=-1
+	notifytries=0
+
+	# Notify user.  If notification is not successful, retry every
+	# 15 seconds up to 7 tries.  This may occur if
+	# cont-renew-notify is started before barnowl and barnowl is
+	# taking a long time to load.
+	while [ "$notifystatus" -ne "0" -a "$notifytries" -lt "7" ]; do
+	    $echo "$message" | eval $ZEPHYR_SCREEN_NOTIFY
+	    notifystatus=$?
+	    if [ "$notifystatus" -ne "0" ]; then
+		tries=`expr $tries + 1`
+		sleep 15
+	    fi
+	done
+	notified=$expire
+    fi
+  
+    sleep 3600
+done

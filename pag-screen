@@ -40,16 +40,6 @@ if [ "x$KRBTKFILE" != "x" ]; then
    KRBTKFILE=$NEWKRB4; export KRBTKFILE
 fi
 
-# Figure out which zephyr client to use.  Defaults to barnowl.
-if [ "x$ZEPHYR_SCREEN_CLIENT" = "x" ]; then
-    barnowl=`which barnowl`
-    if [ ! -x "$barnowl" ]; then
-	attach -n -q barnowl
-	barnowl=`athdir /mit/barnowl`/barnowl
-    fi
-    ZEPHYR_SCREEN_CLIENT="$barnowl"
-fi
-
 # Renew tickets and tokens.
 contrenew=`which cont-renew-notify`
 if [ ! -x "$contrenew" ]; then

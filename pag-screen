@@ -57,6 +57,10 @@ fi
 # Renew tickets and tokens.
 contrenew=`which cont-renew-notify`
 if [ ! -x "$contrenew" ]; then
+    attach -n -q sipb
+    contrenew=`athdir /mit/sipb`/cont-renew-notify
+fi
+if [ ! -x "$contrenew" ]; then
     zwrite $ATHENA_USER -d -m "$0: cont-renew doesn't exist on `hostname`... Not doing renewals"
     contrenew=/bin/true
 fi

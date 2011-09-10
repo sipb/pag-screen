@@ -1,0 +1,26 @@
+.TH PAG-SCREEN 1 "September 10, 2011"
+.SH NAME
+pag-screen \- run screen session with persistent tickets and tokens
+.SH SYNOPSIS
+pag-screen
+.SH DESCRIPTION
+.IR pag-screen
+allows running long-running programs in a
+.B screen
+session, in such a way
+that the user can disconnect and reconnect without destroying their tickets
+or tokens on logout.
+
+.SH FILES
+/tmp/krb5cc_${USER}_screen
+
+.SH BUGS/DEFICIENCIES
+Please report to bug-sipb@mit.edu.
+
+.SH "SEE ALSO"
+
+screen(1)
+
+.SH AUTHORS
+Kevin Chen (kchen),
+Alex Dehnert (adehnert)

@@ -17,7 +17,7 @@ if [ "x$screen" = "x" ]; then
 fi
 
 # Check for pre-existing screens.
-screenlist=`$screen -list | grep owl`
+screenlist=`$screen -list | grep '[0-9]\.pag'`
 if [ "x$screenlist" != "x" ]; then
     echo "Found a pre-existing owl-screen session:"
     echo "$screenlist"

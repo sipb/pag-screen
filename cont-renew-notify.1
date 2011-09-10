@@ -1,0 +1,31 @@
+.TH CONT-RENEW-NOTIFY 1 "September 10, 2011"
+.SH NAME
+cont-renew-notify \- renew Kerberos tickets, zephyring when they near expiration
+.SH SYNOPSIS
+cont-renew-notify
+.SH DESCRIPTION
+.IR cont-renew-notify
+renews renewable Kerberos tickets every hour. When the tickets are within 24
+hours of scheduled final expiry, or the tickets are not renewable, it will
+zephyr the user to notify them that they will need to
+.B kinit
+again.
+
+Typically, this is used together with a
+.B screen
+session run by
+.B pag-screen
+to run a long-running session with Kerberos tickets.
+
+.SH ENVIRONMENT
+$USER, $ATHENA_USER
+
+.SH BUGS/DEFICIENCIES
+Please report to bug-sipb@mit.edu.
+
+.SH SEE ALSO
+screen(1), pag-screen(1)
+
+.SH AUTHORS
+Kevin Chen (kchen),
+Alex Dehnert (adehnert)

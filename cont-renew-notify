@@ -48,7 +48,7 @@ while [ 1 ]; do
     aklog
     zctl load > /dev/null 2> /dev/null
   
-    expirestr=`klist | grep 'renew until' | sed -e 's/[\t ]*renew until //' | head -n1`
+    expirestr=`LC_TIME=C klist | grep 'renew until' | sed -e 's/[\t ]*renew until //' | head -n1`
 
     if [ -z "$expirestr" ]; then
 	expire=0
@@ -63,7 +63,7 @@ while [ 1 ]; do
     now=`$date +%s`
     difference=`expr $expire - $now`
     if [ "$difference" -lt "86400" -a "$notified" != "$expire" ]; then
-	notifystatus=-1
+	notifystatus="-1"
 	notifytries=0
 
 	# Notify user.  If notification is not successful, retry every

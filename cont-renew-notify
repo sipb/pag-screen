@@ -41,7 +41,7 @@ fi
 sleep 7
 
 while [ 1 ]; do
-    echo "Renewing at " $($date)
+    echo "Renewing at `$date`"
     kinit -R
     hash krb524init > /dev/null 2>&1 && krb524init
     sleep 1

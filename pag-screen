@@ -37,9 +37,9 @@ aklog || echo "Failed to get new tokens"
 NEWKRB5=`mktemp -t "krb5cc_${USER}_screen_XXXXXXXXXX"`
 
 # Copy the tickets we obtained on login to the screen tickets.
-KRB5CCNAME=`echo $KRB5CCNAME | sed 's/FILE://'`
+KRB5CCNAME=`echo "$KRB5CCNAME" | sed 's/^FILE://'`
 if [ "x$KRB5CCNAME" != "x" ]; then
-    cp $KRB5CCNAME $NEWKRB5
+    cp "$KRB5CCNAME" "$NEWKRB5"
 else
     echo "No tickets; not copying to new CC"
 fi
@@ -50,8 +50,8 @@ KRB5CCNAME=FILE:$NEWKRB5; export KRB5CCNAME
 # Repeat for krb4 if appropriate.
 if [ "x$KRBTKFILE" != "x" ]; then
    NEWKRB4=`mktemp -t "tkt_${USER}_screen_XXXXXXXXXX"`
-   KRBTKFILE=`echo $KRBTKFILE | sed 's/FILE://'`
-   cp $KRBTKFILE $NEWKRB4
+   KRBTKFILE=`echo "$KRBTKFILE" | sed 's/^FILE://'`
+   cp "$KRBTKFILE" "$NEWKRB4"
    KRBTKFILE=$NEWKRB4; export KRBTKFILE
 fi
 

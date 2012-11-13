@@ -16,7 +16,7 @@
 
 # Default to zephyring.
 if [ "x$ZEPHYR_SCREEN_NOTIFY" = "x" ]; then
-    ZEPHYR_SCREEN_NOTIFY='zwrite -n ${ATHENA_USER:-$USER}'
+    ZEPHYR_SCREEN_NOTIFY='zwrite -n "${ATHENA_USER:-$USER}"'
 fi
 
 # Figure out where date is.
@@ -71,7 +71,7 @@ while [ 1 ]; do
 	# cont-renew-notify is started before barnowl and barnowl is
 	# taking a long time to load.
 	while [ "$notifystatus" -ne "0" -a "$notifytries" -lt "7" ]; do
-	    $echo "$message" | eval $ZEPHYR_SCREEN_NOTIFY
+	    $echo "$message" | eval "$ZEPHYR_SCREEN_NOTIFY"
 	    notifystatus=$?
 	    if [ "$notifystatus" -ne "0" ]; then
 		tries=`expr $tries + 1`

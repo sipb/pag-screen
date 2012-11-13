@@ -1,5 +1,7 @@
 #!/usr/bin/env pagsh
 
+set -e
+
 screen=`which screen`
 if [ ! -x "$screen" ]; then
     attachandrun=`which attachandrun`
@@ -18,7 +20,7 @@ if [ ! -x "$screen" ]; then
 fi
 
 # Check for pre-existing screens.
-screenlist=`$screen -list | grep '[0-9]\.pag'`
+screenlist=`$screen -list | grep '[0-9]\.pag' || :`
 if [ "x$screenlist" != "x" ]; then
     echo "Found a pre-existing owl-screen session:"
     echo "$screenlist"

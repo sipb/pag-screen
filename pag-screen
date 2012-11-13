@@ -1,9 +1,9 @@
 #!/usr/bin/env pagsh
 
 screen=`which screen`
-if [ "x$screen" = "x" ]; then
+if [ ! -x "$screen" ]; then
     attachandrun=`which attachandrun`
-    if [ "x$attachandrun" = "x" ]; then
+    if [ ! -x "$attachandrun" ]; then
         echo "Neither screen nor attachandrun is available."
         echo "Add screen to your path, and then try again."
         exit 1

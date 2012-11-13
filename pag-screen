@@ -8,12 +8,13 @@ if [ ! -x "$screen" ]; then
         echo "Add screen to your path, and then try again."
         exit 1
     fi
-    if ! attachandrun --check gnu screen; then
+    if attachandrun --check gnu screen; then
+        screen="$attachandrun gnu screen screen"
+    else
         echo "screen is available neither in your path nor in the gnu locker."
         echo "Add screen to your path, and then try again."
         exit 1
     fi
-    screen="$attachandrun gnu screen screen"
 fi
 
 # Check for pre-existing screens.

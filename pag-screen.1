@@ -2,7 +2,7 @@
 .SH NAME
 pag-screen \- run screen session with persistent tickets and tokens
 .SH SYNOPSIS
-pag-screen
+pag-screen [-d]
 .SH DESCRIPTION
 .IR pag-screen
 allows running long-running programs in a
@@ -10,6 +10,10 @@ allows running long-running programs in a
 session, in such a way
 that the user can disconnect and reconnect without destroying their tickets
 or tokens on logout.
+
+.TP
+\fB\-d\fR
+create a DIR cache (which allows storing multiple sets of Kerberos tickets) instead of a FILE cache. A DIR cache will be created regardless of this option if the current cache is a DIR cache.
 
 .SH FILES
 /tmp/krb5cc_${USER}_screen

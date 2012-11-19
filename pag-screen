@@ -4,10 +4,11 @@ set -e
 
 usage="Usage: $0 [-d]"
 
-oldcachetype=`echo "$KRB5CCNAME" | sed --silent 's/^\(FILE\|DIR\):.*$/\1/;T;p'`
-if [ "x$oldcachetype" = "x" ]; then
-    oldcachetype=FILE
-fi
+case "$KRB5CCNAME" in
+    DIR:*) oldcachetype=DIR;;
+    FILE:*) oldcachetype=FILE;;
+    *) oldcachetype=FILE;;
+esac
 cachetype=$oldcachetype
 
 while getopts "dh" options; do
@@ -20,7 +21,7 @@ while getopts "dh" options; do
             exit 1;;
     esac
 done
-shift `expr $OPTIND - 1`
+shift `expr $OPTIND - 1 || :`
 
 # Set diropt to -d (for mktemp and cont-renew-notify) for DIR caches,
 # and leave empty for FILE caches

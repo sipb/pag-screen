@@ -133,6 +133,7 @@ while [ 1 ]; do
     echo "Renewing at `$date`"
     problems_new=" "
     if [ "$allcaches" = "true" ]; then
+        klist -l
         caches=`klist -l | awk 'NR > 2 { print $2 }'`
         for cache in $caches; do
             renew_cache "$cache";

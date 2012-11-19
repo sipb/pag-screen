@@ -74,7 +74,7 @@ notify_user()
         $echo "$message" | eval "$ZEPHYR_SCREEN_NOTIFY"
         notifystatus=$?
         if [ "$notifystatus" -ne "0" ]; then
-            tries=`expr $tries + 1`
+            notifytries=`expr $notifytries + 1`
             sleep 15
         fi
     done

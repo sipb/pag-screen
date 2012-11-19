@@ -2,7 +2,36 @@
 
 set -e
 
-screen=`which screen`
+usage="Usage: $0 [-d]"
+
+case "$KRB5CCNAME" in
+    DIR:*) oldcachetype=DIR;;
+    FILE:*) oldcachetype=FILE;;
+    *) oldcachetype=FILE;;
+esac
+cachetype=$oldcachetype
+
+while getopts "dh" options; do
+    case $options in
+        d ) cachetype=DIR;;
+        h ) echo "$usage"; exit 0;;
+        \? ) echo "$usage"
+            exit 1;;
+        * ) echo "$usage"
+            exit 1;;
+    esac
+done
+shift `expr $OPTIND - 1 || :`
+
+# Set diropt to -d (for mktemp and cont-renew-notify) for DIR caches,
+# and leave empty for FILE caches
+if [ "$cachetype" = "DIR" ]; then
+    diropt="-d"
+else
+    diropt=""
+fi
+
+screen=`which screen || :`
 if [ ! -x "$screen" ]; then
     attachandrun=`which attachandrun`
     if [ ! -x "$attachandrun" ]; then
@@ -36,18 +65,27 @@ aklog || echo "Failed to get new tokens"
 
 # Use separate kerberos tickets for screen. Even if we accidentally
 # (or intentionally) log out, screen and owl will still have tickets.
-NEWKRB5=`mktemp -t "krb5cc_${USER}_screen_XXXXXXXXXX"`
+NEWKRB5=`mktemp -t $diropt "krb5cc_${USER}_screen_XXXXXXXXXX"`
 
 # Copy the tickets we obtained on login to the screen tickets.
-KRB5CCNAME=`echo "$KRB5CCNAME" | sed 's/^FILE://'`
+KRB5CCNAME=`echo "$KRB5CCNAME" | sed 's/^\(FILE\|DIR\)://'`
 if [ "x$KRB5CCNAME" != "x" ]; then
-    cp "$KRB5CCNAME" "$NEWKRB5"
+    if [ "$oldcachetype" = "DIR" ]; then
+        # We're creating a DIR cache, and want to copy the whole old cache
+        cp "$KRB5CCNAME"/* "$NEWKRB5/"
+    elif [ "$cachetype" = "DIR" ]; then
+        # We're converting a FILE cache to a DIR cache
+        cp "$KRB5CCNAME" "$NEWKRB5/tktorig"
+        echo tktorig > "$NEWKRB5/primary"
+    else
+        cp "$KRB5CCNAME" "$NEWKRB5"
+    fi
 else
     echo "No tickets; not copying to new CC"
 fi
 
 # Now actually use the new tickets.
-KRB5CCNAME=FILE:$NEWKRB5; export KRB5CCNAME
+KRB5CCNAME=$cachetype:$NEWKRB5; export KRB5CCNAME
 
 # Repeat for krb4 if appropriate.
 if [ "x$KRBTKFILE" != "x" ]; then
@@ -58,7 +96,7 @@ if [ "x$KRBTKFILE" != "x" ]; then
 fi
 
 # Renew tickets and tokens.
-contrenew=`which cont-renew-notify`
+contrenew=`which cont-renew-notify || :`
 if [ ! -x "$contrenew" ]; then
     attach -n -q sipb
     contrenew=`athdir /mit/sipb`/cont-renew-notify

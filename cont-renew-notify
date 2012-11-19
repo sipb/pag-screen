@@ -14,20 +14,12 @@
 #command=`basename $0`
 #kill `pgrep -u $USER -f "$command" | grep -v $$` > /dev/null 2> /dev/null
 
-contained() {
-    if echo "$2" | grep "$1" >/dev/null 2>/dev/null; then
-        return 0 # true
-    else
-        return 1
-    fi
-}
-
 usage="Usage: $0 [-d|-f]"
 allcaches=false
-if contained "^DIR:/" "$KRB5CCNAME"; then
+case "$KRB5CCNAME" in
     # We have a DIR: cache. Assume we should renew everything
-    allcaches=true
-fi
+    DIR:/*) allcaches=true;;
+esac
 while getopts "fdh" options; do
     case $options in
         f ) allcaches=false;;
@@ -78,7 +70,7 @@ notify_user()
     # 15 seconds up to 7 tries.  This may occur if
     # cont-renew-notify is started before barnowl and barnowl is
     # taking a long time to load.
-    while [ "$notifystatus" -ne "0" -a "$notifytries" -lt "7" ]; do
+    while [ "$notifystatus" -ne "0" ] && [ "$notifytries" -lt "7" ]; do
         $echo "$message" | eval "$ZEPHYR_SCREEN_NOTIFY"
         notifystatus=$?
         if [ "$notifystatus" -ne "0" ]; then
@@ -116,23 +108,24 @@ renew_cache()
 	problems_new="$problems_new $expire-$ccache_name "
 
         # Check if we knew about this last cycle
-        if contained " $expire-$ccache_name " "$problems"; then
-            true
-        else
-            notify_user "$message"
-        fi
+        case "$problems" in
+            *" $expire-$ccache_name "*) true;;
+            *) notify_user "$message";;
+        esac
     fi
 }
 
-if contained " " "$KRB5CCNAME"; then
-    # KRB5CCNAME contains a space. This may interfere with the parsing of
-    # "klist -l". However, it likely won't interfere with normal clients,
-    # like for example the zwrite we use below to warn about this
-    # situation.
+case "$KRB5CCNAME" in
+    *" "*)
+        # KRB5CCNAME contains a space. This may interfere with the parsing of
+        # "klist -l". However, it likely won't interfere with normal clients,
+        # like for example the zwrite we use below to warn about this
+        # situation.
 
-    message="Warning: your KRB5CCNAME on `hostname` contains whitespace.\nThis may break cont-renew-notify."
-    notify_user "$message"
-fi
+        message="Warning: your KRB5CCNAME on `hostname` contains whitespace.\nThis may break cont-renew-notify."
+        notify_user "$message"
+        ;;
+esac
 
 problems=" "
 while [ 1 ]; do

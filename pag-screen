@@ -26,6 +26,8 @@ shift `expr $OPTIND - 1`
 # and leave empty for FILE caches
 if [ "$cachetype" = "DIR" ]; then
     diropt="-d"
+else
+    diropt=""
 fi
 
 screen=`which screen || :`

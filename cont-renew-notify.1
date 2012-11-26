@@ -1,4 +1,4 @@
-.TH CONT-RENEW-NOTIFY 1 "September 10, 2011"
+.TH CONT-RENEW-NOTIFY 1 "November 18, 2012"
 .SH NAME
 cont-renew-notify \- renew Kerberos tickets, zephyring when they near expiration
 .SH SYNOPSIS
@@ -17,8 +17,16 @@ session run by
 .B pag-screen
 to run a long-running session with Kerberos tickets.
 
+.TP
+\fB\-d\fR
+Force renewing of all principals in a cache. This is the default when \fBKRB5CCNAME\fR refers to a \fBDIR\fR cache.
+
+.TP
+\fB\-f\fR
+Force renewing of only the primary principal in a cache. This is the default when \fBKRB5CCNAME\fR refers to a \fBFILE\fR cache (or other non-\fBDIR\fR cache types).
+
 .SH ENVIRONMENT
-$USER, $ATHENA_USER
+$USER, $ATHENA_USER, $KRB5CCNAME
 
 .SH BUGS/DEFICIENCIES
 Please report to bug-sipb@mit.edu.

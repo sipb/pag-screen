@@ -51,7 +51,7 @@ fi
 # Check for pre-existing screens.
 screenlist=`$screen -list | grep '[0-9]\.pag' || :`
 if [ "x$screenlist" != "x" ]; then
-    echo "Found a pre-existing owl-screen session:"
+    echo "Found a pre-existing pag-screen session:"
     echo "$screenlist"
     echo "You probably want to reattach it instead."
     echo
@@ -102,7 +102,7 @@ if [ ! -x "$contrenew" ]; then
     contrenew=`athdir /mit/sipb`/cont-renew-notify
 fi
 if [ ! -x "$contrenew" ]; then
-    zwrite "${ATHENA_USER:-$USER}" -d -m "$0: cont-renew doesn't exist on `hostname`... Not doing renewals"
+    zwrite "${ATHENA_USER:-$USER}" -d -m "$0: cont-renew-notify doesn't exist on `hostname`... Not doing renewals"
     contrenew=/bin/true
 fi
 nohup $contrenew < /dev/null > /dev/null 2> /dev/null &

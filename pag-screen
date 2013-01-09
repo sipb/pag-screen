@@ -4,6 +4,15 @@ set -e
 
 usage="Usage: $0 [-d]"
 
+# If KRB5CCNAME is unset, try to get the credentials cache location
+# from 'klist'.
+if [ "x$KRB5CCNAME" = "x" ]; then
+    maybeccname=`klist -5 2>/dev/null | head -n 1 | sed -n 's/Ticket cache: //p'`
+    if [ "x$maybeccname" != "x" ]; then
+	KRB5CCNAME="$maybeccname"
+    fi
+fi
+
 case "$KRB5CCNAME" in
     DIR:*) oldcachetype=DIR;;
     FILE:*) oldcachetype=FILE;;

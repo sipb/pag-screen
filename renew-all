@@ -1,0 +1,14 @@
+#!/bin/sh
+# Renew tickets for all principals in the current cache
+
+set -euf
+
+caches=`klist -l | awk 'NR > 2 { print $1 }'`
+main_princ="${caches%%
+*}"
+echo "Primary principal is $main_princ"
+for cache in $caches; do
+    kinit -r7d "$cache"
+done
+kswitch -p "$main_princ"
+klist -l

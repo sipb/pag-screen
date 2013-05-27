@@ -84,12 +84,12 @@ renew_cache()
 {
     ccache_name=$1
 
-    echo "Renewing '$ccache_name'"
-    kinit -R -c "$ccache_name"
+    echo "Renewing${ccache_name:+ '$ccache_name'}"
+    kinit -R ${ccache_name:+-c "$ccache_name"}
     sleep 1
   
-    expirestr=`LC_TIME=C klist -c "$ccache_name" | grep 'renew until' | sed -e 's/[\t ]*renew until //' | head -n1`
-    principal=`klist -c "$ccache_name" | grep 'Default principal:' | sed -e 's/Default principal: \(.*\)$/\1/'`
+    expirestr=`LC_TIME=C klist ${ccache_name:+-c "$ccache_name"} | grep 'renew until' | sed -e 's/[\t ]*renew until //' | head -n1`
+    principal=`klist ${ccache_name:+-c "$ccache_name"} | grep 'Default principal:' | sed -e 's/Default principal: \(.*\)$/\1/'`
 
     if [ -z "$expirestr" ]; then
 	expire=0

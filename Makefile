@@ -1,6 +1,6 @@
 
 all:
-	@echo done.
+	@echo Maybe you wanted install?
 
 install:
 	install -c -m 555 pag-screen /afs/.sipb.mit.edu/project/sipb/share/pag-screen

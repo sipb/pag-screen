@@ -20,10 +20,15 @@ case "$KRB5CCNAME" in
 esac
 cachetype=$oldcachetype
 
-while getopts "dh" options; do
+screenname=pag
+screenargs=""
+
+while getopts "dhS:c:" options; do
     case $options in
         d ) cachetype=DIR;;
         h ) echo "$usage"; exit 0;;
+        S ) screenname="$OPTARG";;
+        c ) screenargs="$screenargs -c $OPTARG";;
         \? ) echo "$usage"
             exit 1;;
         * ) echo "$usage"
@@ -58,7 +63,7 @@ if [ ! -x "$screen" ]; then
 fi
 
 # Check for pre-existing screens.
-screenlist=`$screen -list | grep '[0-9]\.pag' || :`
+screenlist=`$screen -list | grep "[0-9]\.$screenname" || :`
 if [ "x$screenlist" != "x" ]; then
     echo "Found a pre-existing pag-screen session:"
     echo "$screenlist"
@@ -116,5 +121,5 @@ if [ ! -x "$contrenew" ]; then
 fi
 nohup $contrenew < /dev/null > /dev/null 2> /dev/null &
 
-# Name the screen pag so we can reattach the right screen later.
-$screen -S pag
+# Name the screen so we can reattach the right screen later.
+$screen -S "$screenname" $screenargs
